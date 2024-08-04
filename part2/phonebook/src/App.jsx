@@ -3,33 +3,40 @@ import Person from './components/Person'
 
 const App = () => {
   const [persons, setPersons] = useState([
-    { name: 'Arto Hellas' }
+    { name: 'Arto Hellas', number: '040-123456'}
   ]) 
   const [newName, setNewName] = useState('')
+  const [newNumber, setNewNumber] = useState('')
 
   const handleNameChange = (event) => {
     setNewName(event.target.value)
-}
-const addPerson = (event) => {
-  event.preventDefault()
-
-  if (nameAlreadyExist(newName)) {
-    alert(`${newName} is already added to phonebook`)
   }
-  else {
-    const personObject = {
-      name: newName
+
+  const handleNumberChange = (event) => {
+    setNewNumber(event.target.value)
+  }
+
+  const addPerson = (event) => {
+    event.preventDefault()
+
+    if (nameAlreadyExist(newName)) {
+      alert(`${newName} is already added to phonebook`)
     }
-    setPersons(persons.concat(personObject))
-    setNewName('')
+    else {
+      const personObject = {
+        name: newName,
+        number: newNumber
+      }
+      setPersons(persons.concat(personObject))
+      setNewName('')
+      setNewNumber('')
+    }
   }
-}
 
-const nameAlreadyExist = (name) => persons.some((person) => person.name === name)
+  const nameAlreadyExist = (name) => persons.some((person) => person.name === name)
 
   return (
     <div>
-      <div>debug: {newName}</div>
       <h2>Phonebook</h2>
       <form onSubmit={addPerson}>
         <div>
@@ -37,6 +44,13 @@ const nameAlreadyExist = (name) => persons.some((person) => person.name === name
           <input 
             value={newName}
             onChange={handleNameChange}
+          />
+        </div>
+        <div>
+          number: 
+          <input 
+            value={newNumber}
+            onChange={handleNumberChange}
           />
         </div>
         <div>
