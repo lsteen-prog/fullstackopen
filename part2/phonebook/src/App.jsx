@@ -2,15 +2,22 @@ import { useState, useEffect } from 'react'
 import Persons from './components/Persons'
 import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
+import Notification from './components/Notification'
 import personService from './services/persons'
 
 const App = () => {
+
+  const emptyMessageObject = {
+    text: '',
+    isError: false
+  }
 
   const [persons, setPersons] = useState([])
 
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [filter, setFilter] =useState('')
+  const [message, setMessage] = useState(emptyMessageObject)
 
   useEffect(() => {
     personService
@@ -43,6 +50,27 @@ const App = () => {
           .update(foundPerson.id, changedPerson)
           .then(returnedPerson  => {
             setPersons(persons.map(person => person.id !== foundPerson.id ? person : returnedPerson ))
+            setNewName('')
+            setNewNumber('')
+            const updateMessage = {
+              text: `Changed number of ${returnedPerson.name}`,
+              isError: false
+            }
+            setMessage(updateMessage)
+            setTimeout(() => {
+              setMessage(emptyMessageObject)
+            }, 3000)
+          })
+          .catch(error => {
+            const errorMessage = {
+              text: `Information of ${changedPerson.name} is already removed from server`,
+              isError: true
+            }
+            setMessage(errorMessage)
+            setTimeout(() => {
+              setMessage(emptyMessageObject)
+            }, 3000)
+            setPersons(persons.filter(p => p.id !== foundPerson.id))
           })
       }
     }
@@ -58,6 +86,16 @@ const App = () => {
         setPersons(persons.concat(returnedPerson))
         setNewName('')
         setNewNumber('')
+        const addedMessage = {
+          text: `Added ${returnedPerson.name}`,
+          isError: false
+        }
+        setMessage(
+          addedMessage
+        )
+        setTimeout(() => {
+          setMessage(emptyMessageObject)
+        }, 3000)
       })
     }
   }
@@ -80,6 +118,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={message.text}  isError={message.isError}/>
       <Filter value={filter} onChange={handleFilterChange}/>
       <h3>Add a new</h3>
       <PersonForm 
